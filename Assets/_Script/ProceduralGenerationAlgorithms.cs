@@ -140,3 +140,19 @@ public static class Direction2D
         return cardinalDirectionList[Random.Range(0, cardinalDirectionList.Count)];
     }
 }
+
+public static class RoomInformations
+{
+    public static List<string> TypeOfRoom = new List<string>()
+    {
+        "roomSpwan",
+        "roomEnemies"
+    };
+}
+
+public enum TypeOfRooms
+{
+    roomSpwan = 1,
+    roomEnnemies = 3,
+    roomExit = 1
+}
