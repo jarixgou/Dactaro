@@ -25,14 +25,27 @@ public class RoomFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
 
     private void CreateRooms()
     {
-        var roomsList = ProceduralGenerationAlgorithms.BinarySpacePartitioning(new BoundsInt((Vector3Int)startPosition, new Vector3Int(dungeonWidth, dungeonHeight, 0)), minRoomWidth, minRoomHeight);
-
+        var roomsList = ProceduralGenerationAlgorithms.BinarySpacePartitioning(new BoundsInt((Vector3Int)startPosition, 
+            new Vector3Int(dungeonWidth, dungeonHeight, 0)), minRoomWidth, minRoomHeight);
+        Debug.LogWarning(roomsList.Count);
+        
         HashSet<Vector2Int> floor = new HashSet<Vector2Int>();
         HashSet<Vector2Int> corridorFloor = new HashSet<Vector2Int>();
+        HashSet<Vector2Int> floorSafePlace = new HashSet<Vector2Int>();
+        
+        List<Vector2Int> roomCenters = new List<Vector2Int>();
+        foreach (var room in roomsList)
+        {
+            roomCenters.Add((Vector2Int)Vector3Int.RoundToInt(room.center));
+        }
+        
+        floorSafePlace = CreateRoomsSafePlace(roomsList);
+        roomsList.RemoveAt(0);
+        Debug.LogWarning(roomsList.Count);
 
         if (randomWalkRooms)
         {
-            floor = CreateRoomsRandomly(roomsList);
+            floor = CreateRoomsRandomly(roomsList); 
         }
         else
         {
@@ -40,26 +53,61 @@ public class RoomFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
         }
         
 
-        List<Vector2Int> roomCenters = new List<Vector2Int>();
-        foreach (var room in roomsList)
+        List<List<Vector2Int>> corridors = ConnectRooms(roomCenters);
+        for (int i = 0; i < corridors.Count; i++)
         {
-            roomCenters.Add((Vector2Int)Vector3Int.RoundToInt(room.center));
+            corridors[i] = IncreaseCorridorBrush(corridors[i]);
+            corridorFloor.UnionWith(corridors[i]);
         }
-
-        HashSet<Vector2Int> corridors = ConnectRooms(roomCenters);
-        corridorFloor.UnionWith(corridors);
+        
 
         _tilemapVisualizer.PaintCorridorPath(corridorFloor);
         _tilemapVisualizer.PaintFloorTiles(floor);
-        _spawnManager.SpwanEnnemies(floor);
-        floor.UnionWith(corridors);
+        _tilemapVisualizer.PaintFloorTiles(floorSafePlace);
+        _spawnManager.SpwanEssantials(floor);
+        _spawnManager.SpawnSafePlace(floorSafePlace);
+        floor.UnionWith(floorSafePlace);
+        foreach (var vector2Ints in corridors) floor.UnionWith(vector2Ints);
         WallGenerator.CreateWalls(floor, _tilemapVisualizer);
     }
 
-    private void SetTypeOfRoom(BoundsInt room, TypeOfRooms typeOfRooms)
+    private HashSet<Vector2Int> CreateRoomsSafePlace(List<BoundsInt> roomsList)
     {
-        GameObject newGameObject = new GameObject("Test");
+        HashSet<Vector2Int> floor = new HashSet<Vector2Int>();
+        var roomBounds = roomsList[0];
+        var roomCenter = new Vector2Int(Mathf.RoundToInt(roomBounds.center.x), 
+            Mathf.RoundToInt(roomBounds.center.y));
+        var roomFloor = RunRandomWalk(randomWalkParameters, roomCenter);
+        
+        foreach (var position in roomFloor)
+        {
+            if (position.x >= (roomBounds.xMin + offset) && position.x <= (roomBounds.xMax - offset) && 
+                position.y >= (roomBounds.yMin + offset) && position.y <= (roomBounds.yMax - offset))
+            {
+                floor.Add(position);
+            }
+        }
+        
+        return floor;
     }
+
+    private List<Vector2Int> IncreaseCorridorBrush(List<Vector2Int> corridor)
+    {
+        List<Vector2Int> newCorridor = new List<Vector2Int>();
+        for (int i = 1; i < corridor.Count; i++)
+        {
+            for (int x = -1; x < 1; x++)
+            {
+                for (int y = -1; y < 1; y++)
+                {
+                    newCorridor.Add(corridor[i - 1] + new Vector2Int(x, y));
+                }
+            }
+        }
+
+        return newCorridor;
+    }
+    
 
     private HashSet<Vector2Int> CreateRoomsRandomly(List<BoundsInt> roomsList)
     {
@@ -83,9 +131,9 @@ public class RoomFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
         return floor;
     }
 
-    private HashSet<Vector2Int> ConnectRooms(List<Vector2Int> roomCenters)
+    private List<List<Vector2Int>> ConnectRooms(List<Vector2Int> roomCenters)
     {
-        HashSet<Vector2Int> corridors = new HashSet<Vector2Int>();
+        List<List<Vector2Int>> corridors = new List<List<Vector2Int>>();
         var currentRoomCenter = roomCenters[Random.Range(0, roomCenters.Count)];
         roomCenters.Remove(currentRoomCenter);
 
@@ -95,7 +143,7 @@ public class RoomFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
             roomCenters.Remove(closest);
             List<Vector2Int> newCorridor = CreateCorridor(currentRoomCenter, closest);
             currentRoomCenter = closest;
-            corridors.UnionWith(newCorridor);
+            corridors.Add(newCorridor);
         }
 
         return corridors;

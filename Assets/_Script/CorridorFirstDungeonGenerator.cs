@@ -121,7 +121,7 @@ public class CorridorFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
             var corridor = ProceduralGenerationAlgorithms.RandomWalkCorridors(currentPosition, corridorLength);
             corridors.Add(corridor);
             currentPosition = corridor[corridor.Count - 1];
-            potentialRoomPositions.Add((currentPosition));
+            potentialRoomPositions.Add(currentPosition);
             floorPositions.UnionWith(corridor);
         }
 

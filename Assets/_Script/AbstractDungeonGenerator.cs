@@ -17,7 +17,7 @@ public abstract class AbstractDungeonGenerator : MonoBehaviour
     public void GenerateDungeon()
     {
         _tilemapVisualizer.ClearTile();
-        // Destroy(GameObject.FindGameObjectWithTag("Ennemies"));
+        Destroy(GameObject.FindGameObjectWithTag("Ennemies"));
         RunProceduralGeneration();
     }
 
