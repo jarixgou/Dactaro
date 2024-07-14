@@ -6,16 +6,17 @@ TagManager:
   tags:
   - Ennemies
   - Wall
+  - Cam
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - floor
   - Water
   - UI
   - Player
   - Wall
-  - 
+  - Ennemies
   - 
   - 
   - 

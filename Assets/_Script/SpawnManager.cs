@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Cinemachine;
 using Random = UnityEngine.Random;
 
 public class SpawnManager : MonoBehaviour
@@ -14,7 +15,7 @@ public class SpawnManager : MonoBehaviour
 
     [SerializeField] protected int numberOfEnnemies = 10; // Nombre d'ennemis qui spawn
     [SerializeField] protected GameObject ennemiesPrefab;
-    [SerializeField] protected GameObject prefab;
+    [SerializeField] protected GameObject playerPrefab;
 
     public void SpwanEssantials(HashSet<Vector2Int> floorPosition)
     {
@@ -36,7 +37,7 @@ public class SpawnManager : MonoBehaviour
 
         var index = Random.Range(0, _floorPositionOfSafePlace.Count);
         var floor = _floorPositionOfSafePlace[index];
-        Instantiate(prefab, new Vector3(floor.x + 0.5f, floor.y + 0.5f, 0), Quaternion.identity);
+        Instantiate(playerPrefab, new Vector3(floor.x + 0.5f, floor.y + 0.5f, 0), Quaternion.identity);
     }
 }
     

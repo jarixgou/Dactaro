@@ -8,7 +8,7 @@ using UnityEngine.Tilemaps;
 public class TilemapVisualizer : MonoBehaviour
 {
     [SerializeField]
-    private Tilemap floorTilemap, wallTilemap, pathCorridorTilemap;
+    private Tilemap floorTilemap, wallTilemap, pathCorridorTilemap, safePlaceTilemap;
 
     public Tilemap[] testTile;
     [SerializeField]
@@ -24,6 +24,11 @@ public class TilemapVisualizer : MonoBehaviour
     public void PaintCorridorPath(IEnumerable<Vector2Int> floorPosition)
     {
         PaintTilesCorridorPath(floorPosition, pathCorridorTilemap, floorTile);
+    }
+
+    public void PaintSafePlaceTiles(IEnumerable<Vector2Int> floorPosition)
+    {
+        PaintTiles(floorPosition, safePlaceTilemap, floorTile);
     }
 
     private void PaintTiles(IEnumerable<Vector2Int> positions, Tilemap tilemap, TileBase tile)
@@ -84,6 +89,7 @@ public class TilemapVisualizer : MonoBehaviour
         floorTilemap.ClearAllTiles();
         wallTilemap.ClearAllTiles();
         pathCorridorTilemap.ClearAllTiles();
+        safePlaceTilemap.ClearAllTiles();
     }
 
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -12,7 +13,13 @@ public class PlayerMovement : MonoBehaviour
 
     private float horizontal;
     private float vertical;
-    
+
+    private void Start()
+    {
+        var cam = GameObject.FindWithTag("Cam").GetComponent<CinemachineVirtualCamera>();
+        cam.Follow = this.transform;
+    }
+
     // Update is called once per frame
     void Update()
     {

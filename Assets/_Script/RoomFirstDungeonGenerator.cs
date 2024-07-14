@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 using Random = UnityEngine.Random;
 
 public class RoomFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
@@ -63,7 +64,7 @@ public class RoomFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
 
         _tilemapVisualizer.PaintCorridorPath(corridorFloor);
         _tilemapVisualizer.PaintFloorTiles(floor);
-        _tilemapVisualizer.PaintFloorTiles(floorSafePlace);
+        _tilemapVisualizer.PaintSafePlaceTiles(floorSafePlace);
         _spawnManager.SpwanEssantials(floor);
         _spawnManager.SpawnSafePlace(floorSafePlace);
         floor.UnionWith(floorSafePlace);

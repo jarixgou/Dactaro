@@ -12,7 +12,7 @@ public class EnnemiesAI : MonoBehaviour
     [Range(0f, 25f)] public float speed;
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private LayerMask mask;
-    public Transform target;
+    public GameObject target;
     public RaycastHit2D behindWall;
     private GameObject spwanPointOfEnnemies;
 
@@ -25,12 +25,13 @@ public class EnnemiesAI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        behindWall = Physics2D.Raycast(transform.position, target.position - transform.position, mask);
-        Debug.Log(behindWall.collider);
+        target = GameObject.FindGameObjectWithTag("Player");
+        behindWall = Physics2D.Raycast(transform.position, (target.transform.position - transform.position).normalized, mask);
+        Debug.LogWarning(behindWall.collider);
         
         if (PlayerInZone() && !behindWall.collider.CompareTag("Wall"))
         {  
-            transform.position = Vector2.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, target.transform.position, speed * Time.deltaTime);
         }
         else
         {
@@ -63,7 +64,7 @@ public class EnnemiesAI : MonoBehaviour
 
         Gizmos.DrawWireSphere(transform.position, radiusInRange);
         
-        Gizmos.DrawRay(transform.position, (Vector2)target.position - (Vector2)transform.position);
+        Gizmos.DrawRay(transform.position, (Vector2)target.transform.position - (Vector2)transform.position);
         Gizmos.DrawWireCube(spwanPointOfEnnemies.transform.position, new Vector3(1,1));
     }
     
